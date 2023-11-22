@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strings"
@@ -14,7 +15,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-// var clientsName = flag.String("name", "Placeholder", "Sender's name")
+var clientsName = flag.String("name", "Placeholder", "Sender's name")
 var serverPort = flag.String("server", "5400", "Tcp server")
 
 var server gRPC.AuctionServiceClient
@@ -22,7 +23,9 @@ var ServerConn *grpc.ClientConn
 
 func main() {
 	flag.Parse()
+
 	connectToServer()
+
 	go handleCommand()
 	for {
 
@@ -52,6 +55,13 @@ func sendBid(amount int64) { //Make a bid
 		Id: 1, Amount: amount, Name: "John Doe",
 	})
 	fmt.Println(ack.Acknowledgement)
+	stream, err := server.BroadcastToAll(context.Background())
+	if err != nil {
+		log.Fatalf("Error while creating stream: %v", err)
+	}
+	stream.Send(&gRPC.StreamConnection{StreamName: *clientsName})
+
+	go listenForResult(stream)
 }
 
 func handleCommand() { //Handle commands from user input via the terminal
@@ -71,11 +81,27 @@ func handleCommand() { //Handle commands from user input via the terminal
 			fmt.Println("-- To see the currnet highest bid write 'status' and press enter")
 			fmt.Println("-- To place a bid write the amount you want to bid as a <number> and press enter")
 		} else {
+
 			var bid int64
 			fmt.Sscan(input, &bid)
 			sendBid(bid)
 
 		}
 
+	}
+}
+
+func listenForResult(stream gRPC.AuctionService_BroadcastToAllClient) { //Listen for results from the server
+	for {
+		msg, err := stream.RecvMsg()
+		if err == io.EOF {
+			return
+		}
+		if err != nil {
+			log.Println("Failed to receive broadcast: ", err)
+			return
+		}
+
+		fmt.Println(msg.s)
 	}
 }
