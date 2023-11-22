@@ -71,7 +71,7 @@ func (c *auctionServiceClient) BroadcastToAll(ctx context.Context, opts ...grpc.
 
 type AuctionService_BroadcastToAllClient interface {
 	Send(*StreamConnection) error
-	CloseAndRecv() (*emptypb.Empty, error)
+	Recv() (*StreamConnection, error)
 	grpc.ClientStream
 }
 
@@ -83,11 +83,8 @@ func (x *auctionServiceBroadcastToAllClient) Send(m *StreamConnection) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *auctionServiceBroadcastToAllClient) CloseAndRecv() (*emptypb.Empty, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	m := new(emptypb.Empty)
+func (x *auctionServiceBroadcastToAllClient) Recv() (*StreamConnection, error) {
+	m := new(StreamConnection)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -171,7 +168,7 @@ func _AuctionService_BroadcastToAll_Handler(srv interface{}, stream grpc.ServerS
 }
 
 type AuctionService_BroadcastToAllServer interface {
-	SendAndClose(*emptypb.Empty) error
+	Send(*StreamConnection) error
 	Recv() (*StreamConnection, error)
 	grpc.ServerStream
 }
@@ -180,7 +177,7 @@ type auctionServiceBroadcastToAllServer struct {
 	grpc.ServerStream
 }
 
-func (x *auctionServiceBroadcastToAllServer) SendAndClose(m *emptypb.Empty) error {
+func (x *auctionServiceBroadcastToAllServer) Send(m *StreamConnection) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -212,6 +209,7 @@ var AuctionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "BroadcastToAll",
 			Handler:       _AuctionService_BroadcastToAll_Handler,
+			ServerStreams: true,
 			ClientStreams: true,
 		},
 	},

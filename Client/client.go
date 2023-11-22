@@ -7,15 +7,18 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 	"os"
 	"strings"
+	"time"
 
 	gRPC "github.com/seve0039/Distributed-Auction-System.git/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-var clientsName = flag.String("name", "Placeholder", "Sender's name")
+var user = generateRandomString(5)
+var clientsName = flag.String("name", user, "Sender's name")
 var serverPort = flag.String("server", "5400", "Tcp server")
 
 var server gRPC.AuctionServiceClient
@@ -26,7 +29,10 @@ func main() {
 
 	connectToServer()
 
-	go handleCommand()
+	sendStreamConnection()
+
+	handleCommand()
+
 	for {
 
 	}
@@ -52,16 +58,10 @@ func connectToServer() {
 
 func sendBid(amount int64) { //Make a bid
 	ack, _ := server.Bid(context.Background(), &gRPC.BidAmount{
-		Id: 1, Amount: amount, Name: "John Doe",
+		Id: 1, Amount: amount, Name: *clientsName,
 	})
 	fmt.Println(ack.Acknowledgement)
-	stream, err := server.BroadcastToAll(context.Background())
-	if err != nil {
-		log.Fatalf("Error while creating stream: %v", err)
-	}
-	stream.Send(&gRPC.StreamConnection{StreamName: *clientsName})
 
-	go listenForResult(stream)
 }
 
 func handleCommand() { //Handle commands from user input via the terminal
@@ -102,6 +102,27 @@ func listenForResult(stream gRPC.AuctionService_BroadcastToAllClient) { //Listen
 			return
 		}
 
-		fmt.Println(msg.s)
+		fmt.Println(msg.StreamName)
 	}
+}
+
+func sendStreamConnection() {
+	stream, err := server.BroadcastToAll(context.Background())
+	if err != nil {
+		log.Fatalf("Error while creating stream: %v", err)
+	}
+	stream.Send(&gRPC.StreamConnection{StreamName: *clientsName})
+
+	go listenForResult(stream)
+}
+
+func generateRandomString(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
 }

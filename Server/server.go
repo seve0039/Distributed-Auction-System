@@ -21,6 +21,8 @@ type Server struct {
 	auctionIsOpen bool
 }
 
+var auctionIsOpen bool = true
+var server *Server
 var serverName = flag.String("name", "default", "Server's name")
 var port = flag.String("port", "5400", "Server port")
 var currentHighestBid int64
@@ -31,6 +33,12 @@ func main() {
 	flag.Parse()
 	createLogFile()
 	launchServer()
+	for {
+		if !auctionIsOpen {
+			sendResult(fmt.Sprintf("Highest bid was %d by %s", currentHighestBid, server.mapOfBidders[currentHighestBid]))
+			return
+		}
+	}
 }
 
 func launchServer() {
@@ -40,7 +48,7 @@ func launchServer() {
 	}
 
 	auctionServer := grpc.NewServer()
-	server := &Server{
+	server = &Server{
 		name:          *serverName,
 		port:          *port,
 		participants:  make(map[string]gRPC.AuctionService_BroadcastToAllServer),
@@ -50,14 +58,15 @@ func launchServer() {
 	gRPC.RegisterAuctionServiceServer(auctionServer, server)
 	//gRPC.RegisterAuctionServiceServer(auctionServer, server)
 	log.Printf("NEW SESSION: Server %s: Listening at %v\n", *serverName, list.Addr())
-
 	if err := auctionServer.Serve(list); err != nil {
 		log.Fatalf("failed to serve %v", err)
 	}
+
 }
 
 func (s *Server) Bid(context context.Context, bidAmount *gRPC.BidAmount) (*gRPC.Ack, error) {
-	if s.auctionIsOpen == true {
+	if s.auctionIsOpen {
+
 		higher := isHigherThanCurrentBid(bidAmount.Amount)
 		if higher {
 			s.mapOfBidders[bidAmount.Amount] = bidAmount.Name
@@ -65,6 +74,7 @@ func (s *Server) Bid(context context.Context, bidAmount *gRPC.BidAmount) (*gRPC.
 		} else {
 			return &gRPC.Ack{Acknowledgement: "Fail"}, nil
 		}
+
 	}
 	return &gRPC.Ack{Acknowledgement: "Auction is not open yet!"}, nil
 }
@@ -79,6 +89,17 @@ func (s *Server) BroadcastToAll(stream gRPC.AuctionService_BroadcastToAllServer)
 		s.participants[in.StreamName] = stream
 		fmt.Println("New participant: ", in.StreamName)
 	}
+}
+
+// This function sends the result to all participants
+func sendResult(message string) {
+	//This is the line to run When auction ends
+	//<sendResult(fmt.Sprintf("Highest bid is %d by %s", bidAmount.Amount, bidAmount.Name))>
+
+	for _, participant := range server.participants {
+		participant.Send(&gRPC.StreamConnection{StreamName: message})
+	}
+
 }
 
 func isHigherThanCurrentBid(bidAmount int64) (isHigher bool) {
