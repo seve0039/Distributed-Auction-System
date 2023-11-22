@@ -1,12 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"flag"
 	"fmt"
 	"log"
 	"os"
-	"bufio"
+	"strings"
 
 	gRPC "github.com/seve0039/Distributed-Auction-System.git/proto"
 	"google.golang.org/grpc"
@@ -22,7 +23,7 @@ var ServerConn *grpc.ClientConn
 func main() {
 	flag.Parse()
 	connectToServer()
-
+	go handleCommand()
 	for {
 
 	}
@@ -46,24 +47,34 @@ func connectToServer() {
 	fmt.Println("Connected to server")
 }
 
-func sendMessage(amount int64) {
-	_, _ = server.Bid(context.Background(), &gRPC.BidAmount{
+func sendBid(amount int64) { //Make a bid
+	ack, _ := server.Bid(context.Background(), &gRPC.BidAmount{
 		Id: 1, Amount: amount, Name: "John Doe",
 	})
+	fmt.Println(ack.Acknowledgement)
 }
 
 func handleCommand() { //Handle commands from user input via the terminal
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("--- Please make your bid ---")
-		for {
-			input, err := reader.ReadString('\n')
-			if err != nil {
-				log.Fatal(err)
+	fmt.Println("Write 'help' for options")
+	for {
+		fmt.Print("-> ")
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			log.Fatal(err)
 		}
+		input = strings.TrimSpace(input)
 		if input == "status" {
-			fmt.Println("The highest bid for now is :") //TODO: Get results
+			fmt.Println("The highest bid for now is : [COMMING SOON]") //TODO: Get results
+		} else if input == "help" {
+			fmt.Println("-- To see the currnet highest bid write 'status' and press enter")
+			fmt.Println("-- To place a bid write the amount you want to bid as a <number> and press enter")
 		} else {
-			
+			var bid int64
+			fmt.Sscan(input, &bid)
+			sendBid(bid)
+
 		}
 
 	}

@@ -20,8 +20,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AuctionService_Bid_FullMethodName    = "/proto.AuctionService/Bid"
-	AuctionService_Result_FullMethodName = "/proto.AuctionService/Result"
+	AuctionService_Bid_FullMethodName            = "/proto.AuctionService/Bid"
+	AuctionService_Result_FullMethodName         = "/proto.AuctionService/Result"
+	AuctionService_BroadcastToAll_FullMethodName = "/proto.AuctionService/BroadcastToAll"
 )
 
 // AuctionServiceClient is the client API for AuctionService service.
@@ -30,6 +31,7 @@ const (
 type AuctionServiceClient interface {
 	Bid(ctx context.Context, in *BidAmount, opts ...grpc.CallOption) (*Ack, error)
 	Result(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*HighestBid, error)
+	BroadcastToAll(ctx context.Context, opts ...grpc.CallOption) (AuctionService_BroadcastToAllClient, error)
 }
 
 type auctionServiceClient struct {
@@ -58,12 +60,47 @@ func (c *auctionServiceClient) Result(ctx context.Context, in *emptypb.Empty, op
 	return out, nil
 }
 
+func (c *auctionServiceClient) BroadcastToAll(ctx context.Context, opts ...grpc.CallOption) (AuctionService_BroadcastToAllClient, error) {
+	stream, err := c.cc.NewStream(ctx, &AuctionService_ServiceDesc.Streams[0], AuctionService_BroadcastToAll_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &auctionServiceBroadcastToAllClient{stream}
+	return x, nil
+}
+
+type AuctionService_BroadcastToAllClient interface {
+	Send(*HighestBid) error
+	CloseAndRecv() (*emptypb.Empty, error)
+	grpc.ClientStream
+}
+
+type auctionServiceBroadcastToAllClient struct {
+	grpc.ClientStream
+}
+
+func (x *auctionServiceBroadcastToAllClient) Send(m *HighestBid) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *auctionServiceBroadcastToAllClient) CloseAndRecv() (*emptypb.Empty, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(emptypb.Empty)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // AuctionServiceServer is the server API for AuctionService service.
 // All implementations must embed UnimplementedAuctionServiceServer
 // for forward compatibility
 type AuctionServiceServer interface {
 	Bid(context.Context, *BidAmount) (*Ack, error)
 	Result(context.Context, *emptypb.Empty) (*HighestBid, error)
+	BroadcastToAll(AuctionService_BroadcastToAllServer) error
 	mustEmbedUnimplementedAuctionServiceServer()
 }
 
@@ -76,6 +113,9 @@ func (UnimplementedAuctionServiceServer) Bid(context.Context, *BidAmount) (*Ack,
 }
 func (UnimplementedAuctionServiceServer) Result(context.Context, *emptypb.Empty) (*HighestBid, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Result not implemented")
+}
+func (UnimplementedAuctionServiceServer) BroadcastToAll(AuctionService_BroadcastToAllServer) error {
+	return status.Errorf(codes.Unimplemented, "method BroadcastToAll not implemented")
 }
 func (UnimplementedAuctionServiceServer) mustEmbedUnimplementedAuctionServiceServer() {}
 
@@ -126,6 +166,32 @@ func _AuctionService_Result_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuctionService_BroadcastToAll_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(AuctionServiceServer).BroadcastToAll(&auctionServiceBroadcastToAllServer{stream})
+}
+
+type AuctionService_BroadcastToAllServer interface {
+	SendAndClose(*emptypb.Empty) error
+	Recv() (*HighestBid, error)
+	grpc.ServerStream
+}
+
+type auctionServiceBroadcastToAllServer struct {
+	grpc.ServerStream
+}
+
+func (x *auctionServiceBroadcastToAllServer) SendAndClose(m *emptypb.Empty) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *auctionServiceBroadcastToAllServer) Recv() (*HighestBid, error) {
+	m := new(HighestBid)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // AuctionService_ServiceDesc is the grpc.ServiceDesc for AuctionService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -142,6 +208,12 @@ var AuctionService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuctionService_Result_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "BroadcastToAll",
+			Handler:       _AuctionService_BroadcastToAll_Handler,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "proto/das.proto",
 }
