@@ -93,7 +93,7 @@ func handleCommand() { //Handle commands from user input via the terminal
 
 func listenForResult(stream gRPC.AuctionService_BroadcastToAllClient) { //Listen for results from the server
 	for {
-		msg, err := stream.RecvMsg()
+		msg, err := stream.Recv()
 		if err == io.EOF {
 			return
 		}

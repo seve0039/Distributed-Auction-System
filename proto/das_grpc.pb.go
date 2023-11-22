@@ -70,7 +70,7 @@ func (c *auctionServiceClient) BroadcastToAll(ctx context.Context, opts ...grpc.
 }
 
 type AuctionService_BroadcastToAllClient interface {
-	Send(*HighestBid) error
+	Send(*StreamConnection) error
 	CloseAndRecv() (*emptypb.Empty, error)
 	grpc.ClientStream
 }
@@ -79,7 +79,7 @@ type auctionServiceBroadcastToAllClient struct {
 	grpc.ClientStream
 }
 
-func (x *auctionServiceBroadcastToAllClient) Send(m *HighestBid) error {
+func (x *auctionServiceBroadcastToAllClient) Send(m *StreamConnection) error {
 	return x.ClientStream.SendMsg(m)
 }
 
@@ -172,7 +172,7 @@ func _AuctionService_BroadcastToAll_Handler(srv interface{}, stream grpc.ServerS
 
 type AuctionService_BroadcastToAllServer interface {
 	SendAndClose(*emptypb.Empty) error
-	Recv() (*HighestBid, error)
+	Recv() (*StreamConnection, error)
 	grpc.ServerStream
 }
 
@@ -184,8 +184,8 @@ func (x *auctionServiceBroadcastToAllServer) SendAndClose(m *emptypb.Empty) erro
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *auctionServiceBroadcastToAllServer) Recv() (*HighestBid, error) {
-	m := new(HighestBid)
+func (x *auctionServiceBroadcastToAllServer) Recv() (*StreamConnection, error) {
+	m := new(StreamConnection)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}

@@ -8,7 +8,7 @@ package proto;
 service AuctionService {
     rpc Bid (BidAmount) returns (Ack) {}
     rpc Result (google.protobuf.Empty) returns (HighestBid) {}
-    rpc BroadcastToAll (stream HighestBid) returns (google.protobuf.Empty) {}
+    rpc BroadcastToAll (stream streamConnection) returns (stream streamConnection) {}
 }
 
 message BidAmount {
@@ -24,6 +24,10 @@ message Ack {
 message HighestBid {
     string highestBidderName = 1;
     int64 highestBid = 2;
+}
+
+message streamConnection {
+    string streamName = 1;
 }
 
 

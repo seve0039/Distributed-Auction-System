@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 
 	gRPC "github.com/seve0039/Distributed-Auction-System.git/proto"
 	"google.golang.org/grpc"
@@ -15,6 +16,7 @@ type Server struct {
 	gRPC.UnimplementedAuctionServiceServer
 	name          string
 	port          string
+	participants  map[string]gRPC.AuctionService_BroadcastToAllServer
 	mapOfBidders  map[int64]string
 	auctionIsOpen bool
 }
@@ -23,8 +25,11 @@ var serverName = flag.String("name", "default", "Server's name")
 var port = flag.String("port", "5400", "Server port")
 var currentHighestBid int64
 
+var ports [3]string = [3]string{*port, "5401", "5402"} //Ports to connect to in case of server crash
+
 func main() {
 	flag.Parse()
+	createLogFile()
 	launchServer()
 }
 
@@ -38,9 +43,9 @@ func launchServer() {
 	server := &Server{
 		name:          *serverName,
 		port:          *port,
+		participants:  make(map[string]gRPC.AuctionService_BroadcastToAllServer),
 		mapOfBidders:  make(map[int64]string),
 		auctionIsOpen: true,
-		//participants: make(map[string]gRPC.AuctionService_BroadcastServer),
 	}
 	gRPC.RegisterAuctionServiceServer(auctionServer, server)
 	//gRPC.RegisterAuctionServiceServer(auctionServer, server)
@@ -61,7 +66,19 @@ func (s *Server) Bid(context context.Context, bidAmount *gRPC.BidAmount) (*gRPC.
 			return &gRPC.Ack{Acknowledgement: "Fail"}, nil
 		}
 	}
-	return &gRPC.Ack{Acknowledgement: "Auction is not yet open!"}, nil
+	return &gRPC.Ack{Acknowledgement: "Auction is not open yet!"}, nil
+}
+
+func (s *Server) BroadcastToAll(stream gRPC.AuctionService_BroadcastToAllServer) error {
+	for {
+
+		in, err := stream.Recv()
+		if err != nil {
+			return err
+		}
+		s.participants[in.StreamName] = stream
+		fmt.Println("New participant: ", in.StreamName)
+	}
 }
 
 func isHigherThanCurrentBid(bidAmount int64) (isHigher bool) {
@@ -72,6 +89,15 @@ func isHigherThanCurrentBid(bidAmount int64) (isHigher bool) {
 		return false
 	}
 
+}
+
+func createLogFile() {
+	file, err := os.OpenFile("log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.SetOutput(file)
 }
 
 /*func (s *Server) Result(context context.Context, empty google.protobuf.Empty) (*gRPC.HighestBid){
