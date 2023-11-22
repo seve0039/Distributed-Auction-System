@@ -1,2 +1,28 @@
 syntax = "proto3";
-option go_package = "github.com/PatrickMatthiesen/DSYS-gRPC-template/proto";
+
+import "google/protobuf/empty.proto";
+option go_package = "github.com/seve0039/Distributed-Auction-System.git/proto";
+package proto;
+
+
+service AuctionService {
+    rpc Bid (BidAmount) returns (Ack) {}
+    rpc Result (google.protobuf.Empty) returns (HighestBid) {}
+}
+
+message BidAmount {
+    int64 id = 1;
+    int64 amount = 2;
+    string name = 3;
+}
+
+message Ack {
+    string acknowledgement = 1;
+}
+
+message HighestBid {
+    string highestBidderName = 1;
+    int64 highestBid = 2;
+}
+
+
