@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"time"
 
 	gRPC "github.com/seve0039/Distributed-Auction-System.git/proto"
 	"google.golang.org/grpc"
@@ -33,11 +34,17 @@ var ports [3]string = [3]string{*port, "5401", "5402"} //Ports to connect to in 
 func main() {
 	flag.Parse()
 	createLogFile()
-	launchServer()
+	//go endAuction()
+	go launchServer()
+
 	for {
 		if !auctionIsOpen {
+			auctionIsOpen = true
+			fmt.Println("I get here")
 			sendResult(fmt.Sprintf("Highest bid was %d by %s", currentHighestBid, server.mapOfBidders[currentHighestBid]))
-			return
+			time.Sleep(1 * time.Second)
+			os.Exit(1)
+
 		}
 	}
 }
@@ -115,6 +122,11 @@ func isHigherThanCurrentBid(bidAmount int64) (isHigher bool) {
 		return false
 	}
 
+}
+func endAuction() {
+	time.Sleep(15 * time.Second)
+	auctionIsOpen = false
+	fmt.Println("Auction is now closed")
 }
 
 func createLogFile() {
