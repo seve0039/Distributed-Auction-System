@@ -26,11 +26,8 @@ var ServerConn *grpc.ClientConn
 
 func main() {
 	flag.Parse()
-
 	connectToServer()
-
 	sendStreamConnection()
-
 	handleCommand()
 
 	for {
