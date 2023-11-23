@@ -105,8 +105,6 @@ func (s *Server) BroadcastToAll(stream gRPC.AuctionService_BroadcastToAllServer)
 
 // This function sends the result to all participants
 func sendResult(message string) {
-	//This is the line to run When auction ends
-	//<sendResult(fmt.Sprintf("Highest bid is %d by %s", bidAmount.Amount, bidAmount.Name))>
 
 	for _, participant := range server.participants {
 		participant.Send(&gRPC.StreamConnection{StreamName: message})
@@ -138,6 +136,4 @@ func createLogFile() {
 	log.SetOutput(file)
 }
 
-/*func (s *Server) Result(context context.Context, empty google.protobuf.Empty) (*gRPC.HighestBid){
-	return &gRPC.HighestBid{HighestBid: currentHighestBid, Name: s.mapOfBidders[currentHighestBid]}
-}*/
+
