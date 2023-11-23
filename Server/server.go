@@ -32,7 +32,7 @@ var portCounter = 1                                    // Counts the number of u
 func main() {
 	flag.Parse()
 	createLogFile()
-	launchServer(*port)
+	go launchServer(*port)
 	for {
 		if !auctionIsOpen {
 			sendResult(fmt.Sprintf("Highest bid was %d by %s", currentHighestBid, server.mapOfBidders[currentHighestBid]))
