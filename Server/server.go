@@ -27,7 +27,7 @@ var serverName = flag.String("name", "default", "Server's name")
 var port = flag.String("port", "5400", "Server port")
 var currentHighestBid int64
 var ports [3]string = [3]string{*port, "5401", "5402"} //Ports to connect to in case of server crash
-var portCounter = 1
+var portCounter = 1                                    // Counts the number of used ports
 
 func main() {
 	flag.Parse()
@@ -49,7 +49,7 @@ func launchServer(_ string) {
 			log.Fatalf("Failed to listen on port %s: %v", *port, err)
 			log.Printf("Server %s: Trying to find another port", *serverName)
 			port := ports[portCounter]
-			portCounter++
+			portCounter++      // Counts the number of used ports
 			launchServer(port) //Relaunch server with new port
 		} else {
 			log.Fatalf("Server %s: Failed to find available port", *serverName)
@@ -80,9 +80,9 @@ func (s *Server) Bid(context context.Context, bidAmount *gRPC.BidAmount) (*gRPC.
 		higher := isHigherThanCurrentBid(bidAmount.Amount)
 		if higher {
 			s.mapOfBidders[bidAmount.Amount] = bidAmount.Name
-			return &gRPC.Ack{Acknowledgement: "Success"}, nil
+			return &gRPC.Ack{Acknowledgement: "Success: You are now the highest bidder"}, nil
 		} else {
-			return &gRPC.Ack{Acknowledgement: "Fail"}, nil
+			return &gRPC.Ack{Acknowledgement: "Fail: Your bid was too low"}, nil
 		}
 
 	}
