@@ -46,11 +46,11 @@ func launchServer(_ string) {
 	list, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", *port))
 	if err != nil {
 		if portCounter != len(ports) {
-			log.Fatalf("Failed to listen on port %s: %v", *port, err)
+			//log.Fatalf("Failed to listen on port %s: %v", *port, err)
 			log.Printf("Server %s: Trying to find another port", *serverName)
 			port := ports[portCounter]
 			portCounter++      // Counts the number of used ports
-			launchServer(port) //Relaunch server with new port
+			launchServer(port) // Relaunch server with new port
 		} else {
 			log.Fatalf("Server %s: Failed to find available port", *serverName)
 		}
@@ -73,7 +73,7 @@ func launchServer(_ string) {
 
 }
 
-// From the .proto file. Handles a bid from a client during the auction
+// From the .proto file. Handles a bid from a client during the auction and returns the acknowledgement (Success or fail)
 func (s *Server) Bid(context context.Context, bidAmount *gRPC.BidAmount) (*gRPC.Ack, error) {
 	if s.auctionIsOpen {
 		higher := isHigherThanCurrentBid(bidAmount.Amount)
