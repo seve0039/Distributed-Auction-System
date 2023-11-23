@@ -10,6 +10,7 @@ import (
 
 	gRPC "github.com/seve0039/Distributed-Auction-System.git/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type Server struct {
@@ -77,6 +78,10 @@ func (s *Server) Bid(context context.Context, bidAmount *gRPC.BidAmount) (*gRPC.
 
 	}
 	return &gRPC.Ack{Acknowledgement: "Auction is not open yet!"}, nil
+}
+
+func (s *Server) Result(context context.Context, empty *emptypb.Empty) (*gRPC.HighestBid, error) {
+	return &gRPC.HighestBid{HighestBid: currentHighestBid, HighestBidderName: s.mapOfBidders[currentHighestBid]}, nil
 }
 
 func (s *Server) BroadcastToAll(stream gRPC.AuctionService_BroadcastToAllServer) error {
