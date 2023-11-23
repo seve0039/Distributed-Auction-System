@@ -15,6 +15,7 @@ import (
 	gRPC "github.com/seve0039/Distributed-Auction-System.git/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 var user = generateRandomString(5)
@@ -57,8 +58,16 @@ func sendBid(amount int64) { //Make a bid
 	ack, _ := server.Bid(context.Background(), &gRPC.BidAmount{
 		Id: 1, Amount: amount, Name: *clientsName,
 	})
-	fmt.Println(ack.Acknowledgement)
+	if ack.Acknowledgement == "Fail" {
+		fmt.Println("Request failed because the bid was lower than current highest bid")
+	} else if ack.Acknowledgement == "Success" {
+		fmt.Println("Bid was accepted")
+	}
+}
 
+func getResult() { //Get the result of the auction
+	result, _ := server.Result(context.Background(), &emptypb.Empty{})
+	fmt.Println("The current highest bid is:", result.HighestBid, "kr. by:", result.HighestBidderName)
 }
 
 func handleCommand() { //Handle commands from user input via the terminal
@@ -72,11 +81,14 @@ func handleCommand() { //Handle commands from user input via the terminal
 			log.Fatal(err)
 		}
 		input = strings.TrimSpace(input)
-		if input == "status" {
-			fmt.Println("The highest bid for now is : [COMMING SOON]") //TODO: Get results
-		} else if input == "help" {
+		if input == "help" {
+
 			fmt.Println("-- To see the currnet highest bid write 'status' and press enter")
-			fmt.Println("-- To place a bid write the amount you want to bid as a <number> and press enter")
+			fmt.Println("-- To place a bid write the amount you want to bid as a number and press enter")
+
+		} else if input == "status" {
+			getResult()
+
 		} else {
 
 			var bid int64

@@ -7,9 +7,11 @@ import (
 	"log"
 	"net"
 	"os"
+	"time"
 
 	gRPC "github.com/seve0039/Distributed-Auction-System.git/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type Server struct {
@@ -33,10 +35,15 @@ func main() {
 	flag.Parse()
 	createLogFile()
 	go launchServer(*port)
+
 	for {
 		if !auctionIsOpen {
+			auctionIsOpen = true
+			fmt.Println("I get here")
 			sendResult(fmt.Sprintf("Highest bid was %d by %s", currentHighestBid, server.mapOfBidders[currentHighestBid]))
-			return
+			time.Sleep(1 * time.Second)
+			os.Exit(1)
+
 		}
 	}
 }
@@ -92,6 +99,10 @@ func (s *Server) Bid(context context.Context, bidAmount *gRPC.BidAmount) (*gRPC.
 	return &gRPC.Ack{Acknowledgement: "Auction is not open yet!"}, nil
 }
 
+func (s *Server) Result(context context.Context, empty *emptypb.Empty) (*gRPC.HighestBid, error) {
+	return &gRPC.HighestBid{HighestBid: currentHighestBid, HighestBidderName: s.mapOfBidders[currentHighestBid]}, nil
+}
+
 // From the .proto file. Broadcasting to all clients
 func (s *Server) BroadcastToAll(stream gRPC.AuctionService_BroadcastToAllServer) error {
 	for {
@@ -107,8 +118,6 @@ func (s *Server) BroadcastToAll(stream gRPC.AuctionService_BroadcastToAllServer)
 
 // This function sends the result to all participants
 func sendResult(message string) {
-	//This is the line to run When auction ends
-	//<sendResult(fmt.Sprintf("Highest bid is %d by %s", bidAmount.Amount, bidAmount.Name))>
 	for _, participant := range server.participants {
 		participant.Send(&gRPC.StreamConnection{StreamName: message})
 	}
@@ -125,6 +134,11 @@ func isHigherThanCurrentBid(bidAmount int64) (isHigher bool) {
 	}
 
 }
+func endAuction() {
+	time.Sleep(15 * time.Second)
+	auctionIsOpen = false
+	fmt.Println("Auction is now closed")
+}
 
 // Creates and connects to the log.txt file
 func createLogFile() {
@@ -136,6 +150,4 @@ func createLogFile() {
 	log.SetOutput(file)
 }
 
-/*func (s *Server) Result(context context.Context, empty google.protobuf.Empty) (*gRPC.HighestBid){
-	return &gRPC.HighestBid{HighestBid: currentHighestBid, Name: s.mapOfBidders[currentHighestBid]}
-}*/
+
