@@ -76,12 +76,15 @@ func launchServer(_ string) {
 // From the .proto file. Handles a bid from a client during the auction
 func (s *Server) Bid(context context.Context, bidAmount *gRPC.BidAmount) (*gRPC.Ack, error) {
 	if s.auctionIsOpen {
-
 		higher := isHigherThanCurrentBid(bidAmount.Amount)
 		if higher {
 			s.mapOfBidders[bidAmount.Amount] = bidAmount.Name
+			log.Println("Participant", bidAmount.Name, "is now the highest bidder with:", bidAmount.Amount)
+			fmt.Println("Participant", bidAmount.Name, "is now the highest bidder with:", bidAmount.Amount)
 			return &gRPC.Ack{Acknowledgement: "Success: You are now the highest bidder"}, nil
 		} else {
+			log.Println("Participant", bidAmount.Name, "got rejected with the bid:", bidAmount.Amount)
+			fmt.Println("Participant", bidAmount.Name, "got rejected with the bid:", bidAmount.Amount)
 			return &gRPC.Ack{Acknowledgement: "Fail: Your bid was too low"}, nil
 		}
 
@@ -92,12 +95,12 @@ func (s *Server) Bid(context context.Context, bidAmount *gRPC.BidAmount) (*gRPC.
 // From the .proto file. Broadcasting to all clients
 func (s *Server) BroadcastToAll(stream gRPC.AuctionService_BroadcastToAllServer) error {
 	for {
-
 		in, err := stream.Recv()
 		if err != nil {
 			return err
 		}
 		s.participants[in.StreamName] = stream
+		log.Println("New participant: ", in.StreamName)
 		fmt.Println("New participant: ", in.StreamName)
 	}
 }
