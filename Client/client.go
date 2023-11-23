@@ -27,11 +27,8 @@ var ServerConn *grpc.ClientConn
 
 func main() {
 	flag.Parse()
-
 	connectToServer()
-
 	sendStreamConnection()
-
 	handleCommand()
 
 	for {
@@ -78,7 +75,7 @@ func handleCommand() { //Handle commands from user input via the terminal
 	fmt.Println("--- Please make your bid ---")
 	fmt.Println("Write 'help' for options")
 	for {
-		fmt.Print("-> ")
+		fmt.Print(" ")
 		input, err := reader.ReadString('\n')
 		if err != nil {
 			log.Fatal(err)

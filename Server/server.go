@@ -28,14 +28,13 @@ var server *Server
 var serverName = flag.String("name", "default", "Server's name")
 var port = flag.String("port", "5400", "Server port")
 var currentHighestBid int64
-
 var ports [3]string = [3]string{*port, "5401", "5402"} //Ports to connect to in case of server crash
+var portCounter = 1                                    // Counts the number of used ports
 
 func main() {
 	flag.Parse()
 	createLogFile()
-	//go endAuction()
-	go launchServer()
+	go launchServer(*port)
 
 	for {
 		if !auctionIsOpen {
@@ -49,10 +48,19 @@ func main() {
 	}
 }
 
-func launchServer() {
+// Launching the server and starts the auction
+func launchServer(_ string) {
 	list, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", *port))
 	if err != nil {
-		log.Fatalf("Failed to listen on port %s: %v", *port, err)
+		if portCounter != len(ports) {
+			//log.Fatalf("Failed to listen on port %s: %v", *port, err)
+			log.Printf("Server %s: Trying to find another port", *serverName)
+			port := ports[portCounter]
+			portCounter++      // Counts the number of used ports
+			launchServer(port) // Relaunch server with new port
+		} else {
+			log.Fatalf("Server %s: Failed to find available port", *serverName)
+		}
 	}
 
 	auctionServer := grpc.NewServer()
@@ -72,15 +80,19 @@ func launchServer() {
 
 }
 
+// From the .proto file. Handles a bid from a client during the auction and returns the acknowledgement (Success or fail)
 func (s *Server) Bid(context context.Context, bidAmount *gRPC.BidAmount) (*gRPC.Ack, error) {
 	if s.auctionIsOpen {
-
 		higher := isHigherThanCurrentBid(bidAmount.Amount)
 		if higher {
 			s.mapOfBidders[bidAmount.Amount] = bidAmount.Name
-			return &gRPC.Ack{Acknowledgement: "Success"}, nil
+			log.Println("Participant", bidAmount.Name, "is now the highest bidder with:", bidAmount.Amount)
+			fmt.Println("Participant", bidAmount.Name, "is now the highest bidder with:", bidAmount.Amount)
+			return &gRPC.Ack{Acknowledgement: "Success: You are now the highest bidder"}, nil
 		} else {
-			return &gRPC.Ack{Acknowledgement: "Fail"}, nil
+			log.Println("Participant", bidAmount.Name, "got rejected with the bid:", bidAmount.Amount)
+			fmt.Println("Participant", bidAmount.Name, "got rejected with the bid:", bidAmount.Amount)
+			return &gRPC.Ack{Acknowledgement: "Fail: Your bid was too low"}, nil
 		}
 
 	}
@@ -91,27 +103,28 @@ func (s *Server) Result(context context.Context, empty *emptypb.Empty) (*gRPC.Hi
 	return &gRPC.HighestBid{HighestBid: currentHighestBid, HighestBidderName: s.mapOfBidders[currentHighestBid]}, nil
 }
 
+// From the .proto file. Broadcasting to all clients
 func (s *Server) BroadcastToAll(stream gRPC.AuctionService_BroadcastToAllServer) error {
 	for {
-
 		in, err := stream.Recv()
 		if err != nil {
 			return err
 		}
 		s.participants[in.StreamName] = stream
+		log.Println("New participant: ", in.StreamName)
 		fmt.Println("New participant: ", in.StreamName)
 	}
 }
 
 // This function sends the result to all participants
 func sendResult(message string) {
-
 	for _, participant := range server.participants {
 		participant.Send(&gRPC.StreamConnection{StreamName: message})
 	}
 
 }
 
+// Returns true if the bid is higher than the highest bid
 func isHigherThanCurrentBid(bidAmount int64) (isHigher bool) {
 	if currentHighestBid < bidAmount {
 		currentHighestBid = bidAmount
@@ -127,6 +140,7 @@ func endAuction() {
 	fmt.Println("Auction is now closed")
 }
 
+// Creates and connects to the log.txt file
 func createLogFile() {
 	file, err := os.OpenFile("log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {

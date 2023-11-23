@@ -1,13 +1,15 @@
-2023/11/23 11:22:36 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/11/23 11:23:36 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/11/23 11:25:39 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/11/23 11:25:58 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/11/23 11:26:26 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/11/23 11:27:19 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/11/23 11:28:49 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/11/23 11:29:45 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/11/23 11:31:09 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/11/23 11:32:14 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/11/23 11:33:49 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/11/23 11:34:29 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/11/23 11:35:06 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/22 15:20:23 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/22 16:04:00 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/22 16:05:21 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/22 16:07:04 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/22 16:07:49 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/22 16:08:35 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/22 16:09:20 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/22 16:13:09 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/22 16:15:47 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/22 16:20:37 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/23 10:29:24 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/23 11:25:17 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/23 11:28:48 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/23 11:28:54 Participant ZhA27 is now the highest bidder with: 30
+2023/11/23 11:29:13 Participant ZhA27 got rejected with the bid: 20
