@@ -37,7 +37,7 @@ func main() {
 	flag.Parse()
 	createLogFile()
 	go launchServer(*port)
-	go handleCommand()
+	go handleCommand() //write "test crash" in terminal to test crash
 
 	for {
 		if !auctionIsOpen {
@@ -56,13 +56,30 @@ func launchServer(_ string) {
 	list, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", *port))
 	if err != nil {
 		if portCounter != len(ports) {
-			//log.Fatalf("Failed to listen on port %s: %v", *port, err)
 			log.Printf("Server %s: Trying to find another port", *serverName)
 			port := ports[portCounter]
-			portCounter++      // Counts the number of used ports
-			launchServer(port) // Relaunch server with new port
+			portCounter++ // Counts the number of used ports
+			list, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", port))
+			if err != nil {
+				log.Fatalf("Failed to serve %s", port)
+			}
+			auctionServer := grpc.NewServer()
+			server = &Server{
+				name:          *serverName,
+				port:          port,
+				participants:  make(map[string]gRPC.AuctionService_BroadcastToAllServer),
+				mapOfBidders:  make(map[int64]string),
+				auctionIsOpen: true,
+			}
+			gRPC.RegisterAuctionServiceServer(auctionServer, server)
+			log.Printf("NEW SESSION: Server %s: Listening at %v\n", *serverName, list.Addr())
+			fmt.Printf("NEW SESSION: Server %s: Listening at %v\n", *serverName, list.Addr())
+			if err := auctionServer.Serve(list); err != nil {
+				log.Fatalf("failed to serve %v", err)
+			}
+
 		} else {
-			log.Fatalf("Server %s: Failed to find available port", *serverName)
+			log.Println("No more ports available")
 		}
 	}
 
@@ -75,7 +92,6 @@ func launchServer(_ string) {
 		auctionIsOpen: true,
 	}
 	gRPC.RegisterAuctionServiceServer(auctionServer, server)
-	//gRPC.RegisterAuctionServiceServer(auctionServer, server)
 	log.Printf("NEW SESSION: Server %s: Listening at %v\n", *serverName, list.Addr())
 	if err := auctionServer.Serve(list); err != nil {
 		log.Fatalf("failed to serve %v", err)
@@ -143,6 +159,7 @@ func endAuction() {
 	fmt.Println("Auction is now closed")
 }
 
+// Handles commands in terminal
 func handleCommand() {
 	reader := bufio.NewReader(os.Stdin)
 	for {
@@ -155,9 +172,9 @@ func handleCommand() {
 	}
 }
 
+// Provokes a server crash s.t. a port change is needed
 func crashSimulation() {
 	if portCounter < len(ports) {
-		//log.Fatalf("Failed to listen on port %s: %v", *port, err)
 		log.Printf("Server %s: Trying to find another port", *serverName)
 		port := ports[portCounter]
 		portCounter++ // Counts the number of used ports
@@ -174,7 +191,6 @@ func crashSimulation() {
 			auctionIsOpen: true,
 		}
 		gRPC.RegisterAuctionServiceServer(auctionServer, server)
-		//gRPC.RegisterAuctionServiceServer(auctionServer, server)
 		log.Printf("NEW SESSION: Server %s: Listening at %v\n", *serverName, list.Addr())
 		fmt.Printf("NEW SESSION: Server %s: Listening at %v\n", *serverName, list.Addr())
 		if err := auctionServer.Serve(list); err != nil {

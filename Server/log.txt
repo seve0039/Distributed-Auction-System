@@ -40,3 +40,9 @@
 2023/11/24 15:21:32 Server default: Trying to find another port
 2023/11/24 15:21:32 NEW SESSION: Server default: Listening at 127.0.0.1:5401
 2023/11/24 15:21:43 Participant Niels is now the highest bidder with: 20
+2023/11/24 15:25:25 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/24 15:25:34 New participant:  Lone
+2023/11/24 15:25:37 Participant Lone is now the highest bidder with: 20
+2023/11/24 15:25:50 Server default: Trying to find another port
+2023/11/24 15:25:50 NEW SESSION: Server default: Listening at 127.0.0.1:5401
+2023/11/24 15:25:57 Participant Lone got rejected with the bid: 15
