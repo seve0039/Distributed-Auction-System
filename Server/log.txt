@@ -32,3 +32,11 @@
 2023/11/24 15:08:52 New participant:  Niels
 2023/11/24 15:09:07 Server default: Trying to find another port
 2023/11/24 15:09:07 Server default: Failed to find available port
+2023/11/24 15:19:10 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/24 15:19:33 New participant:  Niels
+2023/11/24 15:19:42 Failed to serve 5400
+2023/11/24 15:21:12 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/24 15:21:23 New participant:  Niels
+2023/11/24 15:21:32 Server default: Trying to find another port
+2023/11/24 15:21:32 NEW SESSION: Server default: Listening at 127.0.0.1:5401
+2023/11/24 15:21:43 Participant Niels is now the highest bidder with: 20

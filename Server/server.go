@@ -157,10 +157,30 @@ func handleCommand() {
 
 func crashSimulation() {
 	if portCounter < len(ports) {
-		newPort := ports[portCounter]
-		portCounter++
-		go launchServer(newPort)
-		fmt.Printf("Server restarting on port %s...\n", newPort)
+		//log.Fatalf("Failed to listen on port %s: %v", *port, err)
+		log.Printf("Server %s: Trying to find another port", *serverName)
+		port := ports[portCounter]
+		portCounter++ // Counts the number of used ports
+		list, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", port))
+		if err != nil {
+			log.Fatalf("Failed to serve %s", port)
+		}
+		auctionServer := grpc.NewServer()
+		server = &Server{
+			name:          *serverName,
+			port:          port,
+			participants:  make(map[string]gRPC.AuctionService_BroadcastToAllServer),
+			mapOfBidders:  make(map[int64]string),
+			auctionIsOpen: true,
+		}
+		gRPC.RegisterAuctionServiceServer(auctionServer, server)
+		//gRPC.RegisterAuctionServiceServer(auctionServer, server)
+		log.Printf("NEW SESSION: Server %s: Listening at %v\n", *serverName, list.Addr())
+		fmt.Printf("NEW SESSION: Server %s: Listening at %v\n", *serverName, list.Addr())
+		if err := auctionServer.Serve(list); err != nil {
+			log.Fatalf("failed to serve %v", err)
+		}
+
 	} else {
 		log.Println("No more ports available")
 	}
