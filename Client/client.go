@@ -72,8 +72,8 @@ func getResult() { //Get the result of the auction
 
 func handleCommand() { //Handle commands from user input via the terminal
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("--- Please make your bid ---")
 	fmt.Println("Write 'help' for options")
+	fmt.Println("--- Please make your bid ---")
 	for {
 		fmt.Print(" ")
 		input, err := reader.ReadString('\n')
@@ -83,7 +83,7 @@ func handleCommand() { //Handle commands from user input via the terminal
 		input = strings.TrimSpace(input)
 		if input == "help" {
 
-			fmt.Println("-- You have the following options")
+			fmt.Println("-- You have the following options to type")
 			fmt.Println("* 'status' to see the currnet highest bid")
 			fmt.Println("* <number> to place your bid ")
 
