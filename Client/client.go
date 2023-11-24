@@ -84,8 +84,8 @@ func handleCommand() { //Handle commands from user input via the terminal
 		if input == "help" {
 
 			fmt.Println("--- You have the following options ---")
-			fmt.Println("- 'status' 	 to see the currnet highest bid")
-			fmt.Println("- <amount>		 to place a bid with an amount of your choice")
+			fmt.Println("- 'status'	to see the currnet highest bid")
+			fmt.Println("- <amount>	to place a bid with an amount of your choice")
 
 		} else if input == "status" {
 			getResult()
