@@ -28,3 +28,7 @@
 2023/11/24 14:57:36 NEW SESSION: Server default: Listening at 127.0.0.1:5400
 2023/11/24 14:57:49 New participant:  Niels
 2023/11/24 14:58:46 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/24 15:08:33 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/24 15:08:52 New participant:  Niels
+2023/11/24 15:09:07 Server default: Trying to find another port
+2023/11/24 15:09:07 Server default: Failed to find available port

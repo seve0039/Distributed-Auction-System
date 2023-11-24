@@ -37,6 +37,7 @@ func main() {
 	flag.Parse()
 	createLogFile()
 	go launchServer(*port)
+	go handleCommand()
 
 	for {
 		if !auctionIsOpen {
