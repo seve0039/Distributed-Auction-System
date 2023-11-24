@@ -7,10 +7,8 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"math/rand"
 	"os"
 	"strings"
-	"time"
 
 	gRPC "github.com/seve0039/Distributed-Auction-System.git/proto"
 	"google.golang.org/grpc"
@@ -18,7 +16,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-var user = generateRandomString(5)
+var user = ""
 var clientsName = flag.String("name", user, "Sender's name")
 var serverPort = flag.String("server", "5400", "Tcp server")
 
@@ -27,6 +25,7 @@ var ServerConn *grpc.ClientConn
 
 func main() {
 	flag.Parse()
+	createClientName()
 	connectToServer()
 	sendStreamConnection()
 	handleCommand()
@@ -126,13 +125,15 @@ func sendStreamConnection() {
 	go listenForResult(stream)
 }
 
-func generateRandomString(length int) string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
-
-	b := make([]byte, length)
-	for i := range b {
-		b[i] = charset[seededRand.Intn(len(charset))]
+func createClientName() {
+	if *clientsName == "" {
+		fmt.Print("Enter your name: ")
+		reader := bufio.NewReader(os.Stdin)
+		name, err := reader.ReadString('\n')
+		if err != nil {
+			log.Fatalf("Errer reading name: %v", err)
+		}
+		*clientsName = strings.TrimSpace(name)
 	}
-	return string(b)
+
 }

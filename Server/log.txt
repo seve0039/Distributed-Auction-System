@@ -18,3 +18,13 @@
 2023/11/24 14:35:21 New participant:  JrMTm
 2023/11/24 14:36:51 Participant JrMTm is now the highest bidder with: 30
 2023/11/24 14:36:58 Participant JrMTm got rejected with the bid: 20
+2023/11/24 14:45:20 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/24 14:45:36 New participant:  yt96I
+2023/11/24 14:45:59 New participant:  Dennis
+2023/11/24 14:46:36 Participant Dennis is now the highest bidder with: 30
+2023/11/24 14:46:38 Participant Dennis is now the highest bidder with: 50
+2023/11/24 14:46:40 Participant Dennis is now the highest bidder with: 90
+2023/11/24 14:56:54 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/24 14:57:36 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/24 14:57:49 New participant:  Niels
+2023/11/24 14:58:46 NEW SESSION: Server default: Listening at 127.0.0.1:5400

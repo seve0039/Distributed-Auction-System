@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"flag"
 	"fmt"
 	"log"
 	"net"
 	"os"
+	"strings"
 	"time"
 
 	gRPC "github.com/seve0039/Distributed-Auction-System.git/proto"
@@ -140,6 +142,29 @@ func endAuction() {
 	fmt.Println("Auction is now closed")
 }
 
+func handleCommand() {
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		input, _ := reader.ReadString('\n')
+		input = strings.TrimSpace(input)
+		if input == "test crash" {
+			fmt.Println("Simulating server crash ...")
+			crashSimulation()
+		}
+	}
+}
+
+func crashSimulation() {
+	if portCounter < len(ports) {
+		newPort := ports[portCounter]
+		portCounter++
+		go launchServer(newPort)
+		fmt.Printf("Server restarting on port %s...\n", newPort)
+	} else {
+		log.Println("No more ports available")
+	}
+}
+
 // Creates and connects to the log.txt file
 func createLogFile() {
 	file, err := os.OpenFile("log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
@@ -149,5 +174,3 @@ func createLogFile() {
 
 	log.SetOutput(file)
 }
-
-
