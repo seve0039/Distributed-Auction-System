@@ -186,7 +186,7 @@ func handleCommand() {
 	}
 }
 
-// Provokes a server crash s.t. a port change is needed
+// Provokes a server crash s.t. a port change from client is needed
 func crashSimulation() {
 	os.Exit(1)
 }
@@ -225,7 +225,7 @@ func listenForOtherServers(port string) {
 		backUpConn = conn
 	}
 }
-
+// Constantly updates 
 func (s *Server) UpdateServer(context context.Context, serverData *gRPC.ServerData) (*gRPC.Ack, error) {
 	currentHighestBid = serverData.HighestBid
 	s.mapOfBidders[currentHighestBid] = serverData.HighestBidderName
