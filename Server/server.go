@@ -1,14 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"flag"
 	"fmt"
 	"log"
 	"net"
 	"os"
-	"strings"
 	"time"
 
 	gRPC "github.com/seve0039/Distributed-Auction-System.git/proto"
@@ -41,12 +39,10 @@ var portCounter = 1                                    // Counts the number of u
 func main() {
 	flag.Parse()
 	createLogFile()
-
 	go launchServer(*port)
 	time.Sleep(1 * time.Second)
 	go listenForOtherServers(portToConnectTo)
 	go endAuction()
-	go handleCommand() //write "test crash" in terminal to test crash
 
 	for {
 		if !auctionIsOpen {
@@ -55,7 +51,6 @@ func main() {
 			sendResult(fmt.Sprintf("Highest bid was %d by %s", currentHighestBid, server.mapOfBidders[currentHighestBid]))
 			time.Sleep(1 * time.Second)
 			os.Exit(1)
-
 		}
 	}
 }
@@ -75,13 +70,7 @@ func launchServer(_ string) {
 				log.Fatalf("Failed to serve %s", port)
 			}
 			auctionServer := grpc.NewServer()
-			server = &Server{
-				name:          *serverName,
-				port:          port,
-				participants:  make(map[string]gRPC.AuctionService_BroadcastToAllServer),
-				mapOfBidders:  make(map[int64]string),
-				auctionIsOpen: true,
-			}
+			newServer(port)
 			gRPC.RegisterAuctionServiceServer(auctionServer, server)
 			log.Printf("NEW SESSION: Server %s: Listening at %v\n", *serverName, list.Addr())
 			fmt.Printf("NEW SESSION: Server %s: Listening at %v\n", *serverName, list.Addr())
@@ -95,19 +84,26 @@ func launchServer(_ string) {
 	}
 
 	auctionServer := grpc.NewServer()
-	server = &Server{
-		name:          *serverName,
-		port:          *port,
-		participants:  make(map[string]gRPC.AuctionService_BroadcastToAllServer),
-		mapOfBidders:  make(map[int64]string),
-		auctionIsOpen: true,
-	}
+	newServer(*port)
 	gRPC.RegisterAuctionServiceServer(auctionServer, server)
 	log.Printf("NEW SESSION: Server %s: Listening at %v\n", *serverName, list.Addr())
 	if err := auctionServer.Serve(list); err != nil {
 		log.Fatalf("failed to serve %v", err)
 	}
 
+}
+
+// Generates new server
+func newServer(port string) *Server {
+	server = &Server{
+		name:          *serverName,
+		port:          port,
+		participants:  make(map[string]gRPC.AuctionService_BroadcastToAllServer),
+		mapOfBidders:  make(map[int64]string),
+		auctionIsOpen: true,
+	}
+	fmt.Println(server)
+	return server
 }
 
 // From the .proto file. Handles a bid from a client during the auction and returns the acknowledgement (Success or fail)
@@ -132,6 +128,7 @@ func (s *Server) Bid(context context.Context, bidAmount *gRPC.BidAmount) (*gRPC.
 	return &gRPC.Ack{Acknowledgement: "Auction is not open yet!"}, nil
 }
 
+// Returns results upon a request form a client
 func (s *Server) Result(context context.Context, empty *emptypb.Empty) (*gRPC.HighestBid, error) {
 	return &gRPC.HighestBid{HighestBid: currentHighestBid, HighestBidderName: s.mapOfBidders[currentHighestBid]}, nil
 }
@@ -167,28 +164,12 @@ func isHigherThanCurrentBid(bidAmount int64) (isHigher bool) {
 	}
 
 }
+
+// Ends auction after given time
 func endAuction() {
 	time.Sleep(30 * time.Second)
 	auctionIsOpen = false
 	fmt.Println("Auction is now closed")
-}
-
-// Handles commands in terminal
-func handleCommand() {
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		input, _ := reader.ReadString('\n')
-		input = strings.TrimSpace(input)
-		if input == "test crash" {
-			fmt.Println("Simulating server crash ...")
-			crashSimulation()
-		}
-	}
-}
-
-// Provokes a server crash s.t. a port change from client is needed
-func crashSimulation() {
-	os.Exit(1)
 }
 
 // Creates and connects to the log.txt file
@@ -225,7 +206,8 @@ func listenForOtherServers(port string) {
 		backUpConn = conn
 	}
 }
-// Constantly updates 
+
+// Constantly updates secondary servers with data from the auction
 func (s *Server) UpdateServer(context context.Context, serverData *gRPC.ServerData) (*gRPC.Ack, error) {
 	currentHighestBid = serverData.HighestBid
 	s.mapOfBidders[currentHighestBid] = serverData.HighestBidderName

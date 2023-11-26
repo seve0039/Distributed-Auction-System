@@ -37,6 +37,7 @@ func main() {
 
 }
 
+// Connects to the server
 func connectToServer(port string) {
 	opts := []grpc.DialOption{
 		grpc.WithBlock(),
@@ -54,19 +55,22 @@ func connectToServer(port string) {
 
 }
 
-func sendBid(amount int64) { //Make a bid
+// Sends a bid to the server
+func sendBid(amount int64) {
 	ack, _ := server.Bid(context.Background(), &gRPC.BidAmount{
 		Id: 1, Amount: amount, Name: *clientsName,
 	})
 	fmt.Println(ack.Acknowledgement)
 }
 
+// function to get the result of the auction
 func getResult() { //Get the result of the auction
 	result, _ := server.Result(context.Background(), &emptypb.Empty{})
 	fmt.Println("The current highest bid is:", result.HighestBid, "kr. by:", result.HighestBidderName)
 }
 
-func handleCommand() { //Handle commands from user input via the terminal
+// Handle commands from user input via the terminal
+func handleCommand() {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Write 'help' for options")
 	fmt.Println("--- Please make your bid ---")
@@ -97,7 +101,8 @@ func handleCommand() { //Handle commands from user input via the terminal
 	}
 }
 
-func listenForResult(stream gRPC.AuctionService_BroadcastToAllClient) { //Listen for results from the server
+// Listen for results from the server if the server crashes it tries to connect to the backup server
+func listenForResult(stream gRPC.AuctionService_BroadcastToAllClient) {
 	for {
 		msg, err := stream.Recv()
 		if err == io.EOF {
@@ -115,6 +120,7 @@ func listenForResult(stream gRPC.AuctionService_BroadcastToAllClient) { //Listen
 	}
 }
 
+// Sends the clients stream to the server so it can send results to the client when the auction is over
 func sendStreamConnection() {
 	stream, err := server.BroadcastToAll(context.Background())
 	if err != nil {
@@ -124,6 +130,7 @@ func sendStreamConnection() {
 	go listenForResult(stream)
 }
 
+// Creates a name for the client
 func createClientName() {
 	if *clientsName == "" {
 		fmt.Print("Enter your name: ")
