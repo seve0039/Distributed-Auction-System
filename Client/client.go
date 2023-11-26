@@ -27,7 +27,7 @@ var ServerConn *grpc.ClientConn
 func main() {
 	flag.Parse()
 	createClientName()
-	connectToServer()
+	connectToServer(*serverPort)
 	sendStreamConnection()
 	handleCommand()
 
@@ -37,13 +37,13 @@ func main() {
 
 }
 
-func connectToServer() {
+func connectToServer(port string) {
 	opts := []grpc.DialOption{
 		grpc.WithBlock(),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
 
-	conn, err := grpc.Dial(fmt.Sprintf(":%s", *serverPort), opts...)
+	conn, err := grpc.Dial(fmt.Sprintf(":%s", port), opts...)
 	if err != nil {
 		log.Fatalf("Fail to Dial : %v", err)
 		fmt.Println("Failed to connect to server")
@@ -104,17 +104,12 @@ func listenForResult(stream gRPC.AuctionService_BroadcastToAllClient) { //Listen
 			return
 		}
 		if err != nil {
-			log.Println("Failed to receive broadcast: ", err)
-
-			time.Sleep(40 * time.Second)
-			fmt.Println("Attempting reconection to server")
-			stream, err := server.BroadcastToAll(context.Background())
-			if err != nil {
-				log.Fatalf("Error while creating stream: %v", err)
-			}
-			stream.Send(&gRPC.StreamConnection{StreamName: *clientsName})
+			fmt.Println("Server is down, attempting to reconnect")
+			connectToServer("5401")
+			time.Sleep(1 * time.Second)
+			sendStreamConnection()
+			return
 		}
-		fmt.Println("The auction has ended")
 
 		fmt.Println(msg.StreamName)
 	}
