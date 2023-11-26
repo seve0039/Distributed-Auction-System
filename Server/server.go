@@ -13,6 +13,7 @@ import (
 
 	gRPC "github.com/seve0039/Distributed-Auction-System.git/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -25,6 +26,10 @@ type Server struct {
 	auctionIsOpen bool
 }
 
+var backUpServer gRPC.AuctionServiceClient
+var backUpConn *grpc.ClientConn
+
+var portToConnectTo = "5400"
 var auctionIsOpen bool = true
 var server *Server
 var serverName = flag.String("name", "default", "Server's name")
@@ -36,7 +41,11 @@ var portCounter = 1                                    // Counts the number of u
 func main() {
 	flag.Parse()
 	createLogFile()
+
 	go launchServer(*port)
+	time.Sleep(1 * time.Second)
+	go listenForOtherServers(portToConnectTo)
+	go endAuction()
 	go handleCommand() //write "test crash" in terminal to test crash
 
 	for {
@@ -54,12 +63,14 @@ func main() {
 // Launching the server and starts the auction
 func launchServer(_ string) {
 	list, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", *port))
+	portToConnectTo = *port
 	if err != nil {
 		if portCounter != len(ports) {
 			log.Printf("Server %s: Trying to find another port", *serverName)
-			port := ports[portCounter]
-			portCounter++ // Counts the number of used ports
+			port := ports[1]
+			portToConnectTo = port
 			list, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", port))
+
 			if err != nil {
 				log.Fatalf("Failed to serve %s", port)
 			}
@@ -102,6 +113,9 @@ func launchServer(_ string) {
 // From the .proto file. Handles a bid from a client during the auction and returns the acknowledgement (Success or fail)
 func (s *Server) Bid(context context.Context, bidAmount *gRPC.BidAmount) (*gRPC.Ack, error) {
 	if s.auctionIsOpen {
+		if portToConnectTo == "5400" {
+			backUpServer.UpdateServer(context, &gRPC.ServerData{HighestBid: currentHighestBid, HighestBidderName: s.mapOfBidders[currentHighestBid]})
+		}
 		higher := isHigherThanCurrentBid(bidAmount.Amount)
 		if higher {
 			s.mapOfBidders[bidAmount.Amount] = bidAmount.Name
@@ -154,7 +168,7 @@ func isHigherThanCurrentBid(bidAmount int64) (isHigher bool) {
 
 }
 func endAuction() {
-	time.Sleep(15 * time.Second)
+	time.Sleep(30 * time.Second)
 	auctionIsOpen = false
 	fmt.Println("Auction is now closed")
 }
@@ -172,34 +186,9 @@ func handleCommand() {
 	}
 }
 
-// Provokes a server crash s.t. a port change is needed
+// Provokes a server crash s.t. a port change from client is needed
 func crashSimulation() {
-	if portCounter < len(ports) {
-		log.Printf("Server %s: Trying to find another port", *serverName)
-		port := ports[portCounter]
-		portCounter++ // Counts the number of used ports
-		list, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", port))
-		if err != nil {
-			log.Fatalf("Failed to serve %s", port)
-		}
-		auctionServer := grpc.NewServer()
-		server = &Server{
-			name:          *serverName,
-			port:          port,
-			participants:  make(map[string]gRPC.AuctionService_BroadcastToAllServer),
-			mapOfBidders:  make(map[int64]string),
-			auctionIsOpen: true,
-		}
-		gRPC.RegisterAuctionServiceServer(auctionServer, server)
-		log.Printf("NEW SESSION: Server %s: Listening at %v\n", *serverName, list.Addr())
-		fmt.Printf("NEW SESSION: Server %s: Listening at %v\n", *serverName, list.Addr())
-		if err := auctionServer.Serve(list); err != nil {
-			log.Fatalf("failed to serve %v", err)
-		}
-
-	} else {
-		log.Println("No more ports available")
-	}
+	os.Exit(1)
 }
 
 // Creates and connects to the log.txt file
@@ -210,4 +199,36 @@ func createLogFile() {
 	}
 
 	log.SetOutput(file)
+}
+
+func listenForOtherServers(port string) {
+
+	opts := []grpc.DialOption{
+		grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	}
+	if port == "5400" {
+		conn, err := grpc.Dial(fmt.Sprintf(":%s", "5401"), opts...)
+		if err != nil {
+			log.Fatalf("Fail to Dial : %v", err)
+		}
+		fmt.Println("Connected to backup server")
+		backUpServer = gRPC.NewAuctionServiceClient(conn)
+		backUpConn = conn
+	} else {
+		fmt.Println("Connected to main server")
+		conn, err := grpc.Dial(fmt.Sprintf(":%s", "5400"), opts...)
+		if err != nil {
+			log.Fatalf("Fail to Dial : %v", err)
+		}
+		backUpServer = gRPC.NewAuctionServiceClient(conn)
+		backUpConn = conn
+	}
+}
+// Constantly updates 
+func (s *Server) UpdateServer(context context.Context, serverData *gRPC.ServerData) (*gRPC.Ack, error) {
+	currentHighestBid = serverData.HighestBid
+	s.mapOfBidders[currentHighestBid] = serverData.HighestBidderName
+	fmt.Println("Server updated")
+	return &gRPC.Ack{Acknowledgement: "Success: Server updated"}, nil
 }
