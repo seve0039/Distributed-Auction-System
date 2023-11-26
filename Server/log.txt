@@ -46,3 +46,107 @@
 2023/11/24 15:25:50 Server default: Trying to find another port
 2023/11/24 15:25:50 NEW SESSION: Server default: Listening at 127.0.0.1:5401
 2023/11/24 15:25:57 Participant Lone got rejected with the bid: 15
+2023/11/25 22:56:37 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 22:57:02 New participant:  idk
+2023/11/25 22:57:51 Server default: Trying to find another port
+2023/11/25 22:57:51 NEW SESSION: Server default: Listening at 127.0.0.1:5401
+2023/11/25 22:58:09 Server default: Trying to find another port
+2023/11/25 22:58:09 Failed to serve 5401
+2023/11/25 22:59:22 Server default: Trying to find another port
+2023/11/25 22:59:22 Failed to serve 5401
+2023/11/25 23:02:33 Server default: Trying to find another port
+2023/11/25 23:02:33 Failed to serve 5401
+2023/11/25 23:05:55 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:06:02 New participant:  adad
+2023/11/25 23:06:36 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:07:29 New participant:  adw
+2023/11/25 23:07:31 Participant adw got rejected with the bid: 0
+2023/11/25 23:07:31 Participant adw is now the highest bidder with: 12
+2023/11/25 23:07:32 Participant adw is now the highest bidder with: 123
+2023/11/25 23:09:13 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:09:18 New participant:  iaw
+2023/11/25 23:09:18 Participant iaw got rejected with the bid: 0
+2023/11/25 23:09:21 Participant iaw is now the highest bidder with: 12
+2023/11/25 23:09:51 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:10:13 Participant iaw is now the highest bidder with: 12
+2023/11/25 23:10:20 Participant iaw is now the highest bidder with: 32
+2023/11/25 23:11:50 New participant:  idk
+2023/11/25 23:12:06 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:13:43 New participant:  idk
+2023/11/25 23:13:47 Participant idk is now the highest bidder with: 90
+2023/11/25 23:14:04 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:14:18 Participant idk got rejected with the bid: 0
+2023/11/25 23:17:57 Participant idk is now the highest bidder with: 12
+2023/11/25 23:19:50 New participant:  h
+2023/11/25 23:19:51 Participant h is now the highest bidder with: 90
+2023/11/25 23:19:54 Participant h got rejected with the bid: 2
+2023/11/25 23:20:11 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:20:16 Participant h is now the highest bidder with: 12
+2023/11/25 23:23:25 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:23:31 New participant:  kjaeef
+2023/11/25 23:23:31 Participant kjaeef is now the highest bidder with: 12
+2023/11/25 23:23:38 New participant:  afakjnff
+2023/11/25 23:23:40 Participant afakjnff is now the highest bidder with: 90
+2023/11/25 23:25:37 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:25:42 New participant:  adaw
+2023/11/25 23:25:43 Participant adaw is now the highest bidder with: 12
+2023/11/25 23:33:33 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:33:44 New participant:  j
+2023/11/25 23:33:46 Participant j is now the highest bidder with: 12
+2023/11/25 23:35:36 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:35:46 New participant:  kaejf
+2023/11/25 23:35:50 Participant kaejf is now the highest bidder with: 13
+2023/11/25 23:36:54 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:36:58 New participant:  dad
+2023/11/25 23:36:58 Participant dad is now the highest bidder with: 12
+2023/11/25 23:37:05 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:37:09 Participant dad is now the highest bidder with: 12
+2023/11/25 23:44:15 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:44:19 New participant:  ik
+2023/11/25 23:44:20 Participant ik is now the highest bidder with: 12
+2023/11/25 23:44:41 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:44:46 New participant:  adwa
+2023/11/25 23:44:48 Participant adwa is now the highest bidder with: 12
+2023/11/25 23:46:35 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:46:40 New participant:  jo
+2023/11/25 23:46:41 Participant jo is now the highest bidder with: 12
+2023/11/25 23:47:14 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/25 23:47:21 New participant:  awf
+2023/11/25 23:47:22 Participant awf is now the highest bidder with: 12
+2023/11/26 10:14:52 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/26 10:14:57 New participant:  idk
+2023/11/26 10:15:33 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/26 10:15:36 New participant:  adaw
+2023/11/26 10:15:40 Participant adaw is now the highest bidder with: 13
+2023/11/26 10:15:59 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/26 10:16:03 Participant adaw is now the highest bidder with: 12
+2023/11/26 11:50:05 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/26 11:50:41 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/26 11:50:50 New participant:  awd
+2023/11/26 11:50:50 Participant awd is now the highest bidder with: 12
+2023/11/26 11:50:53 Participant awd is now the highest bidder with: 1212132
+2023/11/26 11:54:21 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/26 11:54:36 New participant:  aw
+2023/11/26 11:55:34 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/26 11:55:38 New participant:  daw
+2023/11/26 11:55:39 Participant daw is now the highest bidder with: 12
+2023/11/26 11:55:41 Participant daw is now the highest bidder with: 13
+2023/11/26 11:55:57 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/26 11:56:01 Participant daw is now the highest bidder with: 12
+2023/11/26 11:56:03 Participant daw is now the highest bidder with: 13
+2023/11/26 11:56:04 Participant daw got rejected with the bid: 0
+2023/11/26 11:56:05 Participant daw is now the highest bidder with: 14
+2023/11/26 12:01:51 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/26 12:01:54 New participant:  idk
+2023/11/26 12:01:55 Participant idk is now the highest bidder with: 12
+2023/11/26 12:06:37 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/26 12:06:47 New participant:  idk
+2023/11/26 12:06:49 Participant idk is now the highest bidder with: 12
+2023/11/26 12:07:06 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/26 12:07:11 New participant:  'k
+2023/11/26 12:07:12 Participant 'k is now the highest bidder with: 12
+2023/11/26 12:07:36 Server default: Trying to find another port
+2023/11/26 12:07:36 NEW SESSION: Server default: Listening at 127.0.0.1:5401
+2023/11/26 12:09:57 Participant 'k got rejected with the bid: 12
+2023/11/26 12:10:00 Participant 'k is now the highest bidder with: 13
+2023/11/26 12:13:06 NEW SESSION: Server default: Listening at 127.0.0.1:5400

@@ -13,6 +13,7 @@ import (
 
 	gRPC "github.com/seve0039/Distributed-Auction-System.git/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -24,6 +25,9 @@ type Server struct {
 	mapOfBidders  map[int64]string
 	auctionIsOpen bool
 }
+
+var backUpServer gRPC.AuctionServiceClient
+var backUpConn *grpc.ClientConn
 
 var auctionIsOpen bool = true
 var server *Server
@@ -37,6 +41,7 @@ func main() {
 	flag.Parse()
 	createLogFile()
 	go launchServer(*port)
+	//go endAuction()
 	go handleCommand() //write "test crash" in terminal to test crash
 
 	for {
@@ -210,4 +215,26 @@ func createLogFile() {
 	}
 
 	log.SetOutput(file)
+}
+
+func updateServer() {
+	//backUpServer.UpdateServer(context.Background(), &gRPC.ServerData{HighestBid: currentHighestBid, HighestBidderName: server.mapOfBidders[currentHighestBid], BidderMap: server.participants})
+}
+
+func listenForOtherServers(port string) {
+
+	opts := []grpc.DialOption{
+		grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	}
+
+	conn, err := grpc.Dial(fmt.Sprintf(":%s", port), opts...)
+	if err != nil {
+		log.Fatalf("Fail to Dial : %v", err)
+	}
+
+	// Move these lines outside of the error handling block
+	backUpServer = gRPC.NewAuctionServiceClient(conn)
+	backUpConn = conn
+
 }

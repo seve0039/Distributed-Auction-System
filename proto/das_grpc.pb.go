@@ -23,6 +23,7 @@ const (
 	AuctionService_Bid_FullMethodName            = "/proto.AuctionService/Bid"
 	AuctionService_Result_FullMethodName         = "/proto.AuctionService/Result"
 	AuctionService_BroadcastToAll_FullMethodName = "/proto.AuctionService/BroadcastToAll"
+	AuctionService_UpdateServer_FullMethodName   = "/proto.AuctionService/updateServer"
 )
 
 // AuctionServiceClient is the client API for AuctionService service.
@@ -32,6 +33,7 @@ type AuctionServiceClient interface {
 	Bid(ctx context.Context, in *BidAmount, opts ...grpc.CallOption) (*Ack, error)
 	Result(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*HighestBid, error)
 	BroadcastToAll(ctx context.Context, opts ...grpc.CallOption) (AuctionService_BroadcastToAllClient, error)
+	UpdateServer(ctx context.Context, in *ServerData, opts ...grpc.CallOption) (*Ack, error)
 }
 
 type auctionServiceClient struct {
@@ -91,6 +93,15 @@ func (x *auctionServiceBroadcastToAllClient) Recv() (*StreamConnection, error) {
 	return m, nil
 }
 
+func (c *auctionServiceClient) UpdateServer(ctx context.Context, in *ServerData, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, AuctionService_UpdateServer_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuctionServiceServer is the server API for AuctionService service.
 // All implementations must embed UnimplementedAuctionServiceServer
 // for forward compatibility
@@ -98,6 +109,7 @@ type AuctionServiceServer interface {
 	Bid(context.Context, *BidAmount) (*Ack, error)
 	Result(context.Context, *emptypb.Empty) (*HighestBid, error)
 	BroadcastToAll(AuctionService_BroadcastToAllServer) error
+	UpdateServer(context.Context, *ServerData) (*Ack, error)
 	mustEmbedUnimplementedAuctionServiceServer()
 }
 
@@ -113,6 +125,9 @@ func (UnimplementedAuctionServiceServer) Result(context.Context, *emptypb.Empty)
 }
 func (UnimplementedAuctionServiceServer) BroadcastToAll(AuctionService_BroadcastToAllServer) error {
 	return status.Errorf(codes.Unimplemented, "method BroadcastToAll not implemented")
+}
+func (UnimplementedAuctionServiceServer) UpdateServer(context.Context, *ServerData) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateServer not implemented")
 }
 func (UnimplementedAuctionServiceServer) mustEmbedUnimplementedAuctionServiceServer() {}
 
@@ -189,6 +204,24 @@ func (x *auctionServiceBroadcastToAllServer) Recv() (*StreamConnection, error) {
 	return m, nil
 }
 
+func _AuctionService_UpdateServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ServerData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuctionServiceServer).UpdateServer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuctionService_UpdateServer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuctionServiceServer).UpdateServer(ctx, req.(*ServerData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuctionService_ServiceDesc is the grpc.ServiceDesc for AuctionService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -203,6 +236,10 @@ var AuctionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Result",
 			Handler:    _AuctionService_Result_Handler,
+		},
+		{
+			MethodName: "updateServer",
+			Handler:    _AuctionService_UpdateServer_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

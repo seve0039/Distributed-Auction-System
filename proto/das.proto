@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/empty.proto";
+
 option go_package = "github.com/seve0039/Distributed-Auction-System.git/proto";
 package proto;
 
@@ -9,6 +10,7 @@ service AuctionService {
     rpc Bid (BidAmount) returns (Ack) {}
     rpc Result (google.protobuf.Empty) returns (HighestBid) {}
     rpc BroadcastToAll (stream streamConnection) returns (stream streamConnection) {}
+    rpc updateServer(serverData) returns (Ack) {}
 }
 
 message BidAmount {
@@ -28,6 +30,11 @@ message HighestBid {
 
 message streamConnection {
     string streamName = 1;
+}
+
+message serverData {
+    int64 HighestBid = 1;
+    string HighestBidderName = 2;
 }
 
 

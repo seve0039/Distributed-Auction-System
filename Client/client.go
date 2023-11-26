@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	gRPC "github.com/seve0039/Distributed-Auction-System.git/proto"
 	"google.golang.org/grpc"
@@ -47,21 +48,17 @@ func connectToServer() {
 		log.Fatalf("Fail to Dial : %v", err)
 		fmt.Println("Failed to connect to server")
 	}
-
+	fmt.Println("Connected to server")
 	server = gRPC.NewAuctionServiceClient(conn)
 	ServerConn = conn
-	fmt.Println("Connected to server")
+
 }
 
 func sendBid(amount int64) { //Make a bid
 	ack, _ := server.Bid(context.Background(), &gRPC.BidAmount{
 		Id: 1, Amount: amount, Name: *clientsName,
 	})
-	if ack.Acknowledgement == "Fail" {
-		fmt.Println("Request failed because the bid was lower than current highest bid")
-	} else if ack.Acknowledgement == "Success" {
-		fmt.Println("Bid was accepted")
-	}
+	fmt.Println(ack.Acknowledgement)
 }
 
 func getResult() { //Get the result of the auction
@@ -108,8 +105,16 @@ func listenForResult(stream gRPC.AuctionService_BroadcastToAllClient) { //Listen
 		}
 		if err != nil {
 			log.Println("Failed to receive broadcast: ", err)
-			return
+
+			time.Sleep(40 * time.Second)
+			fmt.Println("Attempting reconection to server")
+			stream, err := server.BroadcastToAll(context.Background())
+			if err != nil {
+				log.Fatalf("Error while creating stream: %v", err)
+			}
+			stream.Send(&gRPC.StreamConnection{StreamName: *clientsName})
 		}
+		fmt.Println("The auction has ended")
 
 		fmt.Println(msg.StreamName)
 	}
@@ -121,7 +126,6 @@ func sendStreamConnection() {
 		log.Fatalf("Error while creating stream: %v", err)
 	}
 	stream.Send(&gRPC.StreamConnection{StreamName: *clientsName})
-
 	go listenForResult(stream)
 }
 
