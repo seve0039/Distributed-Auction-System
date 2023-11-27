@@ -169,6 +169,7 @@ func endAuction() {
 	time.Sleep(60 * time.Second)
 	auctionIsOpen = false
 	fmt.Println("Auction is now closed")
+	log.Println("The winner of the auction is ", server.mapOfBidders[currentHighestBid], "with the bid:", currentHighestBid)
 }
 
 // Creates and connects to the log.txt file
