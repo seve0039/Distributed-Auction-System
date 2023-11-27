@@ -61,7 +61,6 @@ func launchServer(_ string) {
 	portToConnectTo = *port
 	if err != nil {
 		if portCounter != len(ports) {
-			log.Printf("Server %s: Trying to find another port", *serverName)
 			port := ports[1]
 			portToConnectTo = port
 			list, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", port))
