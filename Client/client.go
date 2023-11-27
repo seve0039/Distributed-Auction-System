@@ -104,7 +104,7 @@ func listenForResult(stream gRPC.AuctionService_BroadcastToAllClient) { //Listen
 			return
 		}
 		if err != nil {
-			fmt.Println("Server is down, attempting to reconnect")
+			log.Println("Server disconnected trying to connect to secondary server")
 			connectToServer("5401")
 			time.Sleep(1 * time.Second)
 			sendStreamConnection()

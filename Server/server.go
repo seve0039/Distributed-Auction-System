@@ -66,7 +66,6 @@ func launchServer(_ string) {
 	portToConnectTo = *port
 	if err != nil {
 		if portCounter != len(ports) {
-			log.Printf("Server %s: Trying to find another port", *serverName)
 			port := ports[1]
 			portToConnectTo = port
 			list, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", port))
@@ -171,6 +170,7 @@ func endAuction() {
 	time.Sleep(30 * time.Second)
 	auctionIsOpen = false
 	fmt.Println("Auction is now closed")
+	log.Println("The winner of the auction is ", server.mapOfBidders[currentHighestBid], "with the bid:", currentHighestBid)
 }
 
 // Handles commands in terminal
@@ -225,7 +225,8 @@ func listenForOtherServers(port string) {
 		backUpConn = conn
 	}
 }
-// Constantly updates 
+
+// Constantly updates
 func (s *Server) UpdateServer(context context.Context, serverData *gRPC.ServerData) (*gRPC.Ack, error) {
 	currentHighestBid = serverData.HighestBid
 	s.mapOfBidders[currentHighestBid] = serverData.HighestBidderName
