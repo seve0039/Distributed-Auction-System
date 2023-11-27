@@ -26,6 +26,7 @@ var ServerConn *grpc.ClientConn
 
 func main() {
 	flag.Parse()
+	createLogFile()
 	createClientName()
 	connectToServer(*serverPort)
 	sendStreamConnection()
@@ -109,7 +110,7 @@ func listenForResult(stream gRPC.AuctionService_BroadcastToAllClient) {
 			return
 		}
 		if err != nil {
-			log.Println("Server disconnected trying to connect to secondary server")
+			log.Println("Server disconnected for " + user + " trying to connect to secondary server")
 			connectToServer("5401")
 			time.Sleep(1 * time.Second)
 			sendStreamConnection()
@@ -142,4 +143,14 @@ func createClientName() {
 		*clientsName = strings.TrimSpace(name)
 	}
 
+}
+
+// Creates and connects to the log.txt file
+func createLogFile() {
+	file, err := os.OpenFile("../log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.SetOutput(file)
 }

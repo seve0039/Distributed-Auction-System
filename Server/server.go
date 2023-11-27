@@ -76,6 +76,7 @@ func launchServer(_ string) {
 			if err := auctionServer.Serve(list); err != nil {
 				log.Fatalf("failed to serve %v", err)
 			}
+			return
 
 		} else {
 			log.Println("No more ports available")
@@ -101,7 +102,7 @@ func newServer(port string) *Server {
 		mapOfBidders:  make(map[int64]string),
 		auctionIsOpen: true,
 	}
-	fmt.Println(server)
+
 	return server
 }
 
@@ -174,7 +175,7 @@ func endAuction() {
 
 // Creates and connects to the log.txt file
 func createLogFile() {
-	file, err := os.OpenFile("log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile("../log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,0 +1,30 @@
+2023/11/27 13:05:09 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/27 13:06:03 NEW SESSION: Server default: Listening at 127.0.0.1:5401
+2023/11/27 13:06:18 New participant:  kim
+2023/11/27 13:06:20 Participant kim is now the highest bidder with: 12
+2023/11/27 13:06:23 New participant:  mette
+2023/11/27 13:06:24 Participant mette got rejected with the bid: 1
+2023/11/27 13:06:25 Participant mette is now the highest bidder with: 13
+2023/11/27 13:07:00 The winner of the auction is  mette with the bid: 13
+2023/11/27 13:07:02 New participant:  kim
+2023/11/27 13:07:02 New participant:  mette
+2023/11/27 13:07:03 The winner of the auction is  kim with the bid: 12
+----------------------------------------------------------------------
+2023/11/27 13:18:07 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/11/27 13:18:09 NEW SESSION: Server default: Listening at 127.0.0.1:5401
+2023/11/27 13:18:14 New participant:  Kim
+2023/11/27 13:18:16 New participant:  Mette
+2023/11/27 13:18:18 Participant Mette is now the highest bidder with: 12
+2023/11/27 13:18:21 Participant Kim got rejected with the bid: 11
+2023/11/27 13:18:23 Participant Kim is now the highest bidder with: 13
+2023/11/27 13:18:27 Server disconnected trying to connect to secondary server
+2023/11/27 13:18:27 Server disconnected trying to connect to secondary server
+2023/11/27 13:18:28 New participant:  Mette
+2023/11/27 13:18:28 New participant:  Kim
+2023/11/27 13:18:36 Participant Kim got rejected with the bid: 12
+2023/11/27 13:18:37 Participant Kim is now the highest bidder with: 15
+2023/11/27 13:18:41 Participant Mette is now the highest bidder with: 18
+2023/11/27 13:18:42 Participant Mette got rejected with the bid: 12
+2023/11/27 13:19:10 The winner of the auction is  Mette with the bid: 18
+2023/11/27 13:19:11 Server disconnected for Mette trying to connect to secondary server
+2023/11/27 13:19:11 Server disconnected for Kim trying to connect to secondary server

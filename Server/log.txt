@@ -1,8 +1,0 @@
-2023/11/27 12:21:03 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/11/27 12:22:41 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/11/27 12:22:45 New participant:  Gert
-2023/11/27 12:23:38 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/11/27 12:23:40 Server default: Trying to find another port
-2023/11/27 12:23:40 NEW SESSION: Server default: Listening at 127.0.0.1:5401
-2023/11/27 12:23:42 New participant:  Gert
-2023/11/27 12:23:52 Participant Gert is now the highest bidder with: 20
