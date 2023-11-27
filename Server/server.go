@@ -42,7 +42,7 @@ func main() {
 	go launchServer(*port)
 	time.Sleep(1 * time.Second)
 	go listenForOtherServers(portToConnectTo)
-	go endAuction()
+	endAuction()
 
 	for {
 		if !auctionIsOpen {
@@ -167,7 +167,7 @@ func isHigherThanCurrentBid(bidAmount int64) (isHigher bool) {
 
 // Ends auction after given time
 func endAuction() {
-	time.Sleep(30 * time.Second)
+	time.Sleep(60 * time.Second)
 	auctionIsOpen = false
 	fmt.Println("Auction is now closed")
 }
